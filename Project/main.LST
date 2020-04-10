@@ -1,0 +1,43 @@
+C51 COMPILER V9.01   MAIN                                                                  04/09/2020 17:57:09 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\Output\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND TABS(2) OBJECT(..\Output\main.obj)
+
+line level    source
+
+   1          /*
+   2           * @Description: Control WS2812 through STC15W204S
+   3           * @version: 
+   4           * @Author: Adol
+   5           * @Date: 2020-04-09 16:25:14
+   6           * @LastEditTime: 2020-04-09 16:35:59
+   7           */
+   8          #include <reg51.h>
+   9          #include <intrins.h>
+  10          
+  11          #define uint8   unsigned char
+  12          #define uint16  unsigned short
+  13          #define uint32  unsigned int
+  14          
+  15          int main(void)
+  16          {
+  17   1          
+  18   1          
+  19   1          return 0;
+  20   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      4    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
