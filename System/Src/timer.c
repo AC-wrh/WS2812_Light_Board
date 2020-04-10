@@ -3,10 +3,22 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-10 14:25:47
- * @LastEditTime: 2020-04-10 14:39:22
+ * @LastEditTime: 2020-04-10 17:20:48
  */
 
-void Timer0_Init(void)
+uint MS1;
+
+void delayus(uint us) //     延时n个1us    @12M晶振  STC15F104W芯片
+{
+    uint us2;
+    for (us2 = us; us2 > 0; us2--)
+    {
+        _nop_();
+        _nop_();
+    }
+}
+
+void timer0_init(void)      //定时器0初始化
 {
     AUXR |= 0x80;           //定时器0为1T模式
     // AUXR &= 0x7f;           //定时器0为12T模式
@@ -19,7 +31,7 @@ void Timer0_Init(void)
     EA  = 1;                //开启总中断
 }
 
-void Timer0_IRQHandler(void) interrupt 1 using 1 //---定时器t0-----
+void timer0_IRQ_handler(void) interrupt 1 using 1 //---定时器t0-----
 {
     TF0 = 0;
     MS1++;

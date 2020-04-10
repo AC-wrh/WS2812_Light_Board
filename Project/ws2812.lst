@@ -1,0 +1,199 @@
+C51 COMPILER V9.01   WS2812                                                                04/10/2020 18:07:31 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE WS2812
+OBJECT MODULE PLACED IN ..\Output\ws2812.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\Module\Src\ws2812.c BROWSE INCDIR(..\Module\Inc;..\System\Inc) DEBUG OBJ
+                    -ECTEXTEND PRINT(.\ws2812.lst) TABS(2) OBJECT(..\Output\ws2812.obj)
+
+line level    source
+
+   1          /*
+   2           * @Description: 
+   3           * @version: 
+   4           * @Author: Adol
+   5           * @Date: 2020-04-10 14:25:05
+   6           * @LastEditTime: 2020-04-10 17:59:48
+   7           */
+   8          #include "main.h"
+*** ERROR C141 IN LINE 26 OF ..\MODULE\INC\WS2812.H: syntax error near 'uint8'
+*** ERROR C129 IN LINE 26 OF ..\MODULE\INC\WS2812.H: missing ';' before 'r_dat'
+   9          
+  10          dev_color_t ws_color_ctl;
+  11          uint8 color_change_speed = 75;
+  12          
+  13          void ws_send_high_level() //H=0.7us.L=0.6us       数据1的表示
+  14          {   //1US= 4个 _nop_();  进程序要用掉2个_nop_(); 出程序用掉2个_nop_();
+  15              sda = 1;
+  16              _nop_();
+  17              _nop_();
+  18              _nop_();
+  19              sda = 0;
+  20              _nop_();
+  21          }
+  22          
+  23          void ws_send_low_level() //H=0.35us.L=0.8us      数据0的表示
+  24          {
+  25              sda = 1;
+  26              _nop_();
+  27              _nop_();
+  28              sda = 0;
+  29              _nop_();
+  30              _nop_();
+  31          }
+  32          
+  33          void ws_send_sda(uint32 dat)     //发送8位数据
+  34          {
+  35              uint8 count1; //位计数器，单字节为8位
+  36              for (count1 = 8; count1 > 0; count1--)
+  37              {
+  38                  if (dat & 0x80) //取高位先发，则dat & 0x80
+  39                      send_high_level();
+  40                  else
+  41                      send_low_level();
+  42                  dat <<= 1; //数据右移，下一个位的数据,若高位先发则dat<<=1
+  43              }
+  44          }
+  45          
+  46          void ws_send_updata(uint8 len, uint8 *r, uint8 *g, uint8 *b) // 全部发送同样的数据
+  47          {
+  48              uint8 i;
+  49          
+  50              for (i = 0; i < len; i++)
+  51              {
+  52                  send_sda(*r);
+C51 COMPILER V9.01   WS2812                                                                04/10/2020 18:07:31 PAGE 2   
+
+  53                  send_sda(*g);
+  54                  send_sda(*b); 
+  55                  r++;
+  56                  g++;
+  57                  b++;
+  58              }
+  59              sda = 0;
+  60              delayus(70); // 高于50US的低电平信号=复位，
+  61          }
+  62          
+  63          // LED cycle gradient
+  64          // R = FF           G = 0 -> FF         B = 0           yellow  #FFFF00
+  65          // R = FF -> 0      G = FF              B = 0           green   #00FF00
+  66          // R = 0            G = FF              B = 0 -> FF     cyan    #00FFFF
+  67          // R = 0            G = FF -> 0         B = FF          blue    #0000FF
+  68          // R = 0 -> FF      G = 0               B = FF          purple  #FF00FF
+  69          // R = FF           G = 0               B = FF -> 0     red     #FF0000
+  70          void color_cycle_gradient(uint8 interval)
+  71          {
+  72              static uint8 cycle_gradient_flag = 0;
+  73          
+  74              switch (cycle_gradient_flag)
+  75              {
+  76              case 0: // R = 00 -> FF, G = 0, B = 0   #000000 -> #FF0000
+  77                  r_dat += interval;
+  78                  if (r_dat == COLOR_MAX)
+  79                  {
+  80                      cycle_gradient_flag = 1;
+  81                  }
+  82                  break;
+  83          
+  84              case 1: // R = FF, G = 0 -> FF, B = 0   #FF0000 -> #FFFF00
+  85                  g_dat += interval;
+  86                  if (g_dat == COLOR_MAX)
+  87                  {
+  88                      cycle_gradient_flag = 2;
+  89                  }
+  90                  break;
+  91          
+  92              case 2: // R = FF -> 0, G = FF, B = 0   #FFFF00 -> #00FF00
+  93                  r_dat -= interval;
+  94                  if (r_dat == COLOR_MIN)
+  95                  {
+  96                      cycle_gradient_flag = 3;
+  97                  }
+  98                  break;
+  99          
+ 100              case 3: // R = 0, G = FF, B = 0 -> FF   #00FF00 -> #00FFFF
+ 101                  b_dat += interval;
+ 102                  if (b_dat == COLOR_MAX)
+ 103                  {
+ 104                      cycle_gradient_flag = 4;
+ 105                  }
+ 106                  break;
+ 107          
+ 108              case 4: // R = 0, G = FF -> 0, B = FF   #00FFFF -> #0000FF
+ 109                  g_dat -= interval;
+ 110                  if (g_dat == COLOR_MIN)
+ 111                  {
+ 112                      cycle_gradient_flag = 5;
+ 113                  }
+ 114                  break;
+C51 COMPILER V9.01   WS2812                                                                04/10/2020 18:07:31 PAGE 3   
+
+ 115          
+ 116              case 5: // R = 0 -> FF, G = 0, B = FF   #0000FF -> #FF00FF
+ 117                  r_dat += interval;
+ 118                  if (r_dat == COLOR_MAX)
+ 119                  {
+ 120                      cycle_gradient_flag = 6;
+ 121                  }
+ 122                  break;
+ 123          
+ 124              case 6: // R = FF, G = 0, B = 0 -> FF   #FF00FF -> #FF0000
+ 125                  b_dat -= interval;
+ 126                  if (b_dat == COLOR_MIN)
+ 127                  {
+ 128                      cycle_gradient_flag = 1;
+ 129                  }
+ 130                  break;
+ 131          
+ 132              default:
+ 133                  break;
+ 134              }
+ 135          }
+ 136          
+ 137          void PWM_Dimming(uint8 mode, uint8 interval, uint8 speed)
+ 138          {
+ 139              uint8 count;
+ 140          
+ 141              color_change_speed = speed;
+ 142          
+ 143              if (mode) //中间往两边渐变
+ 144              {
+ 145                  for (count = 0; count < (DENGSHU - 1) / 2; count++)
+ 146                  {
+ 147                      ws_dat_r[count + 1] = ws_dat_r[count];
+ 148                      ws_dat_g[count + 1] = ws_dat_g[count];
+ 149                      ws_dat_b[count + 1] = ws_dat_b[count];
+ 150          
+ 151                      ws_dat_r[23 - (count + 1)] = ws_dat_r[23 - count];
+ 152                      ws_dat_g[23 - (count + 1)] = ws_dat_g[23 - count];
+ 153                      ws_dat_b[23 - (count + 1)] = ws_dat_b[23 - count];
+ 154                  }
+ 155                  color_cycle_gradient(interval);
+ 156                  ws_dat_r[0] = r_dat;
+ 157                  ws_dat_g[0] = g_dat;
+ 158                  ws_dat_b[0] = b_dat;
+ 159          
+ 160                  ws_dat_r[23] = r_dat;
+ 161                  ws_dat_g[23] = g_dat;
+ 162                  ws_dat_b[23] = b_dat;
+ 163              }
+ 164              else //流水灯渐变
+ 165              {
+ 166                  for (count = 0; count < DENGSHU - 1; count++)
+ 167                  {
+ 168                      ws_dat_r[count + 1] = ws_dat_r[count];
+ 169                      ws_dat_g[count + 1] = ws_dat_g[count];
+ 170                      ws_dat_b[count + 1] = ws_dat_b[count];
+ 171                  }
+ 172                  color_cycle_gradient(interval);
+ 173                  ws_dat_r[0] = r_dat;
+ 174                  ws_dat_g[0] = g_dat;
+ 175                  ws_dat_b[0] = b_dat;
+ 176              }
+C51 COMPILER V9.01   WS2812                                                                04/10/2020 18:07:31 PAGE 4   
+
+ 177          
+ 178              WS_Set_Date(DENGSHU, ws_dat_r, ws_dat_g, ws_dat_b);
+ 179          }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  2 ERROR(S)

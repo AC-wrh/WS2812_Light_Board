@@ -1,9 +1,10 @@
-C51 COMPILER V9.01   MAIN                                                                  04/09/2020 17:57:09 PAGE 1   
+C51 COMPILER V9.01   MAIN                                                                  04/10/2020 18:07:31 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
 OBJECT MODULE PLACED IN ..\Output\main.obj
-COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND TABS(2) OBJECT(..\Output\main.obj)
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\System\Src\main.c BROWSE INCDIR(..\Module\Inc;..\System\Inc) DEBUG OBJEC
+                    -TEXTEND PRINT(.\main.lst) TABS(2) OBJECT(..\Output\main.obj)
 
 line level    source
 
@@ -12,32 +13,34 @@ line level    source
    3           * @version: 
    4           * @Author: Adol
    5           * @Date: 2020-04-09 16:25:14
-   6           * @LastEditTime: 2020-04-09 16:35:59
+   6           * @LastEditTime: 2020-04-10 17:25:53
    7           */
-   8          #include <reg51.h>
-   9          #include <intrins.h>
-  10          
-  11          #define uint8   unsigned char
-  12          #define uint16  unsigned short
-  13          #define uint32  unsigned int
-  14          
-  15          int main(void)
-  16          {
-  17   1          
-  18   1          
-  19   1          return 0;
-  20   1      }
+   8          #include "main.h"
+*** ERROR C141 IN LINE 26 OF ..\MODULE\INC\WS2812.H: syntax error near 'uint8'
+*** ERROR C129 IN LINE 26 OF ..\MODULE\INC\WS2812.H: missing ';' before 'r_dat'
+   9          
+  10          int main(void)
+  11          {
+  12              unsigned char color_mode = 0;
+  13          
+  14              P3M1 = 0x80;
+  15              P3M0 = 0x80;
+  16              MS1 = 0;
+  17              send = 0;
+  18          
+  19              Init();
+  20              while (1) //Ö÷Ñ­»·¡£
+  21              {
+  22                  if (send == 1)
+  23                  {
+  24                      TR0 = 0;
+  25                      PWM_Dimming(color_mode, COLOR_CHANGE_INTERVAL_NORMAL, 25);
+  26                      send = 0;
+  27                      TR0 = 1;
+  28                  }
+  29              }
+  30              
+  31              return 0;
+  32          }
 
-
-MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =      4    ----
-   CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----    ----
-   PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----    ----
-   IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
-END OF MODULE INFORMATION.
-
-
-C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  2 ERROR(S)
