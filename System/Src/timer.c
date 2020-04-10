@@ -6,7 +6,7 @@
  * @LastEditTime: 2020-04-10 17:20:48
  */
 
-uint MS1;
+int MS1;
 
 void delayus(uint us) //     ÑÓÊ±n¸ö1us    @12M¾§Õñ  STC15F104WÐ¾Æ¬
 {

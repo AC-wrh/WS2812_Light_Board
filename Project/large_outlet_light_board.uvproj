@@ -298,7 +298,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>..\Module\Inc;..\System\Inc</IncludePath>
             </VariousControls>
           </C51>
           <Ax51>
@@ -351,9 +351,19 @@
           <GroupName>Source Group 1</GroupName>
           <Files>
             <File>
+              <FileName>ws2812.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Module\Src\ws2812.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\main.c</FilePath>
+              <FilePath>..\System\Src\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\Src\timer.c</FilePath>
             </File>
           </Files>
         </Group>
