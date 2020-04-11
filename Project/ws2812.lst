@@ -1,0 +1,286 @@
+C51 COMPILER V9.01   WS2812                                                                04/11/2020 17:49:28 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE WS2812
+OBJECT MODULE PLACED IN ..\Output\ws2812.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\Module\Src\ws2812.c BROWSE INCDIR(..\Module\Inc;..\System\Inc) DEBUG OBJ
+                    -ECTEXTEND PRINT(.\ws2812.lst) TABS(2) OBJECT(..\Output\ws2812.obj)
+
+line level    source
+
+   1          /*
+   2           * @Description: 
+   3           * @version: 
+   4           * @Author: Adol
+   5           * @Date: 2020-04-11 16:41:33
+   6           * @LastEditTime: 2020-04-11 17:49:22
+   7           */
+   8          #include "core.h"
+   9          
+  10          unsigned char ws_dat_r = 0; //颜色变量0-255 就是FF以内
+  11          unsigned char ws_dat_g = 0;
+  12          unsigned char ws_dat_b = 0;
+  13          unsigned char ws_dat_buf_r[WS2812_QUANTITY];
+  14          unsigned char ws_dat_buf_g[WS2812_QUANTITY];
+  15          unsigned char ws_dat_buf_b[WS2812_QUANTITY];
+  16          
+  17          void dev_ws_send_bit1() //H=0.7us.L=0.6us  数据1的表示   芯片STC15F104W  @ 12MHZ
+  18          {//1US= 4个 _nop_();  进程序要用掉2个_nop_(); 出程序用掉2个_nop_();
+  19   1          sda = 1;
+  20   1          _nop_();
+  21   1          _nop_();
+  22   1          _nop_();
+  23   1          sda = 0;
+  24   1          _nop_();
+  25   1      }
+  26          
+  27          void dev_ws_send_bit0() //H=0.35us.L=0.8us  ==数据0的表示
+  28          {
+  29   1          sda = 1;
+  30   1          _nop_();
+  31   1          _nop_();
+  32   1          sda = 0;
+  33   1          _nop_();
+  34   1          _nop_();
+  35   1      }
+  36          
+  37          
+  38          void dev_ws_send_single_data(unsigned int dat)     //发送8位，=1颗灯的一种颜色，WS2812灯数�
+             -�为24一串24位二进制数–每种颜色8位二进制数。
+  39          {
+  40   1          unsigned char count1; //位计数器，单字节为8位
+  41   1          for (count1 = 8; count1 > 0; count1--)
+  42   1          {
+  43   2              if (dat & 0x80) //取高位先发，则dat & 0x80
+  44   2                  dev_ws_send_bit1();
+  45   2              else
+  46   2                  dev_ws_send_bit0();
+  47   2              dat <<= 1; //数据右移，下一个位的数据,若高位先发则dat<<=1
+  48   2          }
+  49   1      }
+  50          
+  51          void dev_ws_send_data(unsigned char len, unsigned char *r, unsigned char *g, unsigned char *b) // 全部�
+             -�送同样的数据
+  52          {
+C51 COMPILER V9.01   WS2812                                                                04/11/2020 17:49:28 PAGE 2   
+
+  53   1          unsigned char i;
+  54   1      
+  55   1          for (i = 0; i < len; i++)
+  56   1          {
+  57   2              dev_ws_send_single_data(*r);
+  58   2              dev_ws_send_single_data(*g);
+  59   2              dev_ws_send_single_data(*b);
+  60   2              r++;
+  61   2              g++;
+  62   2              b++;
+  63   2          }
+  64   1          sda = 0;
+  65   1          dev_ws_delayus(70); // 高于50US的低电平信号=复位，
+  66   1      }
+  67          
+  68          
+  69          
+  70          
+  71          
+  72          
+  73          
+  74          
+  75          
+  76          // LED cycle gradient
+  77          // R = FF           G = 0 -> FF         B = 0           yellow  #FFFF00
+  78          // R = FF -> 0      G = FF              B = 0           green   #00FF00
+  79          // R = 0            G = FF              B = 0 -> FF     cyan    #00FFFF
+  80          // R = 0            G = FF -> 0         B = FF          blue    #0000FF
+  81          // R = 0 -> FF      G = 0               B = FF          purple  #FF00FF
+  82          // R = FF           G = 0               B = FF -> 0     red     #FF0000
+  83          
+  84          void get_chase_data(unsigned char chase_quantity, unsigned char chase_interval, unsigned char *chase_data)
+             -  //single LED chase
+  85          {
+  86   1          unsigned char num;
+  87   1      
+  88   1          for (num = 0; num < chase_quantity; num++)
+  89   1          {
+  90   2              chase_data[num] = WS2812_QUANTITY + num * (chase_interval + 1);
+  91   2          }
+  92   1          
+  93   1      }
+  94          
+  95          void color_cycle_gradient(unsigned char interval) 
+  96          {
+  97   1          static unsigned char cycle_gradient_flag = 0;
+  98   1      
+  99   1          switch (cycle_gradient_flag)
+ 100   1          {
+ 101   2          case 0: // R = 00 -> FF, G = 0, B = 0   #000000 -> #FF0000
+ 102   2              ws_dat_r += interval;
+ 103   2              
+ 104   2              if (ws_dat_r == COLOR_MAX)
+ 105   2              {
+ 106   3                  cycle_gradient_flag = 1;
+ 107   3              }
+ 108   2              break;
+ 109   2      
+ 110   2          case 1: // R = FF, G = 0 -> FF, B = 0   #FF0000 -> #FFFF00
+ 111   2              ws_dat_g += interval;
+ 112   2              if (ws_dat_g == COLOR_MAX)
+ 113   2              {
+C51 COMPILER V9.01   WS2812                                                                04/11/2020 17:49:28 PAGE 3   
+
+ 114   3                  cycle_gradient_flag = 2;
+ 115   3              }
+ 116   2              break;
+ 117   2      
+ 118   2          case 2: // R = FF -> 0, G = FF, B = 0   #FFFF00 -> #00FF00
+ 119   2              ws_dat_r -= interval;
+ 120   2              if (ws_dat_r == COLOR_MIN)
+ 121   2              {
+ 122   3                  cycle_gradient_flag = 3;
+ 123   3              }
+ 124   2              break;
+ 125   2      
+ 126   2          case 3: // R = 0, G = FF, B = 0 -> FF   #00FF00 -> #00FFFF
+ 127   2              ws_dat_b += interval;
+ 128   2              if (ws_dat_b == COLOR_MAX)
+ 129   2              {
+ 130   3                  cycle_gradient_flag = 4;
+ 131   3              }
+ 132   2              break;
+ 133   2      
+ 134   2          case 4: // R = 0, G = FF -> 0, B = FF   #00FFFF -> #0000FF
+ 135   2              ws_dat_g -= interval;
+ 136   2              if (ws_dat_g == COLOR_MIN)
+ 137   2              {
+ 138   3                  cycle_gradient_flag = 5;
+ 139   3              }
+ 140   2              break;
+ 141   2      
+ 142   2          case 5: // R = 0 -> FF, G = 0, B = FF   #0000FF -> #FF00FF
+ 143   2              ws_dat_r += interval;
+ 144   2              if (ws_dat_r == COLOR_MAX)
+ 145   2              {
+ 146   3                  cycle_gradient_flag = 6;
+ 147   3              }
+ 148   2              break;
+ 149   2      
+ 150   2          case 6: // R = FF, G = 0, B = 0 -> FF   #FF00FF -> #FF0000
+ 151   2              ws_dat_b -= interval;
+ 152   2              if (ws_dat_b == COLOR_MIN)
+ 153   2              {
+ 154   3                  cycle_gradient_flag = 1;
+ 155   3              }
+ 156   2              break;
+ 157   2      
+ 158   2          default:
+ 159   2              break;
+ 160   2          }
+ 161   1      }
+ 162          
+ 163          void PWM_Dimming(unsigned char mode, unsigned char interval, unsigned char speed)
+ 164          {
+ 165   1          unsigned char count, chase_data[CHASE_QUANTITY];
+ 166   1          static unsigned char chase_count = 0;
+ 167   1      
+ 168   1          timing_time = speed;
+ 169   1      
+ 170   1          switch (mode)
+ 171   1          {
+ 172   2          case MODE_GRADIENT:         //timer 25
+ 173   2              for (count = 0; count < WS2812_QUANTITY - 1; count++)
+ 174   2              {
+ 175   3                  ws_dat_buf_r[count + 1] = ws_dat_buf_r[count];
+C51 COMPILER V9.01   WS2812                                                                04/11/2020 17:49:28 PAGE 4   
+
+ 176   3                  ws_dat_buf_g[count + 1] = ws_dat_buf_g[count];
+ 177   3                  ws_dat_buf_b[count + 1] = ws_dat_buf_b[count];
+ 178   3              }
+ 179   2              color_cycle_gradient(interval);
+ 180   2              ws_dat_buf_r[0] = ws_dat_r;
+ 181   2              ws_dat_buf_g[0] = ws_dat_g;
+ 182   2              ws_dat_buf_b[0] = ws_dat_b;
+ 183   2              break;
+ 184   2          
+ 185   2          case MODE_BOTH_GRADIENT:    //timer 25
+ 186   2              for (count = 0; count < (WS2812_QUANTITY - 1) / 2; count++)
+ 187   2              {
+ 188   3                  ws_dat_buf_r[count + 1] = ws_dat_buf_r[count];
+ 189   3                  ws_dat_buf_g[count + 1] = ws_dat_buf_g[count];
+ 190   3                  ws_dat_buf_b[count + 1] = ws_dat_buf_b[count];
+ 191   3      
+ 192   3                  ws_dat_buf_r[23 - (count + 1)] = ws_dat_buf_r[23 - count];
+ 193   3                  ws_dat_buf_g[23 - (count + 1)] = ws_dat_buf_g[23 - count];
+ 194   3                  ws_dat_buf_b[23 - (count + 1)] = ws_dat_buf_b[23 - count];
+ 195   3              }
+ 196   2              color_cycle_gradient(interval);
+ 197   2              ws_dat_buf_r[0] = ws_dat_r;
+ 198   2              ws_dat_buf_g[0] = ws_dat_g;
+ 199   2              ws_dat_buf_b[0] = ws_dat_b;
+ 200   2      
+ 201   2              ws_dat_buf_r[23] = ws_dat_r;
+ 202   2              ws_dat_buf_g[23] = ws_dat_g;
+ 203   2              ws_dat_buf_b[23] = ws_dat_b;
+ 204   2              break;
+ 205   2      
+ 206   2          case MODE_CHASE:    //23 + (quantity - number) * (interval - 1);
+ 207   2              // get_chase_data(CHASE_QUANTITY, CHASE_INTERVAL, chase_data);
+ 208   2              for (count = 0; count < WS2812_QUANTITY - 1; count++)
+ 209   2              {
+ 210   3                  ws_dat_buf_r[count] = 0;
+ 211   3                  ws_dat_buf_g[count] = 0;
+ 212   3                  ws_dat_buf_b[count] = 0;
+ 213   3              }
+ 214   2              color_cycle_gradient(interval);
+ 215   2              
+ 216   2              if (chase_count <= 23)
+ 217   2              {
+ 218   3                  ws_dat_buf_r[chase_count] = ws_dat_r;
+ 219   3                  ws_dat_buf_g[chase_count] = ws_dat_g;
+ 220   3                  ws_dat_buf_b[chase_count] = ws_dat_b;
+ 221   3              }
+ 222   2              
+ 223   2              if (chase_count > 1 && chase_count <= 25)
+ 224   2              {
+ 225   3                  ws_dat_buf_r[chase_count - 2] = ws_dat_b;
+ 226   3                  ws_dat_buf_g[chase_count - 2] = ws_dat_r;
+ 227   3                  ws_dat_buf_b[chase_count - 2] = ws_dat_g;
+ 228   3              }
+ 229   2      
+ 230   2              if (chase_count > 3 && chase_count <= 27)
+ 231   2              {
+ 232   3                  ws_dat_buf_r[chase_count - 4] = ws_dat_g;
+ 233   3                  ws_dat_buf_g[chase_count - 4] = ws_dat_b;
+ 234   3                  ws_dat_buf_b[chase_count - 4] = ws_dat_r;
+ 235   3              }
+ 236   2      
+ 237   2              if (++chase_count == 28)
+C51 COMPILER V9.01   WS2812                                                                04/11/2020 17:49:28 PAGE 5   
+
+ 238   2              {
+ 239   3                  chase_count = 0;
+ 240   3              }
+ 241   2              
+ 242   2              break;
+ 243   2          
+ 244   2          default:
+ 245   2              break;
+ 246   2          }
+ 247   1      
+ 248   1          dev_ws_send_data(WS2812_QUANTITY, ws_dat_buf_r, ws_dat_buf_g, ws_dat_buf_b);
+ 249   1      }
+*** WARNING C280 IN LINE 165 OF ..\MODULE\SRC\WS2812.C: 'chase_data': unreferenced local variable
+ 250          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    688    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     77      17
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
