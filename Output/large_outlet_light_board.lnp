@@ -1,3 +1,0 @@
-"..\Output\main.obj" 
-TO "..\Output\large_outlet_light_board" 
-PRINT(".\large_outlet_light_board.m51") RAMSIZE(256) 
