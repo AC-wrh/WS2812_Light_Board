@@ -1,1 +1,0 @@
-"..\Module\Src\ws2812.c" BROWSE INCDIR(..\Module\Inc;..\System\Inc) DEBUG OBJECTEXTEND PRINT(.\ws2812.lst) TABS (2) OBJECT(..\Output\ws2812.obj)

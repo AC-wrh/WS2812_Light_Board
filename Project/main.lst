@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   MAIN                                                                  04/11/2020 17:48:20 PAGE 1   
+C51 COMPILER V9.01   MAIN                                                                  04/13/2020 15:56:18 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
@@ -13,67 +13,40 @@ line level    source
    3           * @version: 
    4           * @Author: Adol
    5           * @Date: 2020-04-11 16:40:39
-   6           * @LastEditTime: 2020-04-11 17:47:48
+   6           * @LastEditTime: 2020-04-13 15:55:42
    7           */
    8          #include "core.h"
    9          
-  10          
+  10          unsigned char ws_mode = 0;
   11          int main(void)
   12          {
-  13   1          P3M1 = 0x80;
-  14   1          P3M0 = 0x80;
-  15   1          
-  16   1          timer0_init();
-  17   1          while (1) //主循环。
-  18   1          {
-  19   2              if (timer0_flag == 1)
-  20   2              {
-  21   3                  TR0 = 0;
-  22   3                  PWM_Dimming(MODE_CHASE, COLOR_CHANGE_INTERVAL_NORMAL, 120);
-  23   3                  timer0_flag = 0;
-  24   3                  TR0 = 1;
-  25   3              }
-  26   2          }
-  27   1      
-  28   1          return 0;
-  29   1      }
-  30          
-  31          
-  32          
-  33          
-  34          
-  35          
-  36          
-  37          
-  38          
-  39          
-  40          
-  41          
-  42          
-  43          
-  44          
-  45          
-  46          
-  47          
-  48          
-  49          
-  50          
-  51          //     WsDat_RUN4_R = 0;
-  52          //     WsDat_RUN4_G = 0;
-  53          //     WsDat_RUN4_B = 0;
-  54              
-C51 COMPILER V9.01   MAIN                                                                  04/11/2020 17:48:20 PAGE 2   
-
-  55          // }
-  56          
+  13   1          
+  14   1          
+  15   1          P3M1 = 0x80;
+  16   1          P3M0 = 0x80;
+  17   1          
+  18   1          timer0_init();
+  19   1          while (1) //主循环。
+  20   1          {
+  21   2              if (timer0_flag == 1)
+  22   2              {
+  23   3                  TR0 = 0;
+  24   3                  PWM_Dimming(ws_mode, COLOR_CHANGE_INTERVAL_NORMAL, 120);
+  25   3                  timer0_flag = 0;
+  26   3                  TR0 = 1;
+  27   3              }
+  28   2          }
+  29   1      
+  30   1          return 0;
+  31   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     32    ----
+   CODE SIZE        =     34    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----    ----
+   DATA SIZE        =      1    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

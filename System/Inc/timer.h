@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:17
- * @LastEditTime: 2020-04-11 17:47:33
+ * @LastEditTime: 2020-04-13 09:36:43
  */
 #ifndef __TIMER_H__
 #define __TIMER_H__
@@ -17,6 +17,5 @@ void timer0_init(void);
 
 extern unsigned char timer0_flag;
 extern unsigned int timing_time;
-
 
 #endif

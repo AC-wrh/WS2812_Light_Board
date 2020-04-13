@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:41
- * @LastEditTime: 2020-04-11 17:48:00
+ * @LastEditTime: 2020-04-13 13:59:52
  */
 #ifndef __WS2812_H__
 #define __WS2812_H__
@@ -22,10 +22,9 @@
 #define MODE_BOTH_GRADIENT  1
 #define MODE_CHASE          2
 
-#define CHASE_QUANTITY      3
-#define CHASE_INTERVAL      2
+#define CHASE_QUANTITY      6
+#define CHASE_INTERVAL      4
 
-void PWM_Dimming(unsigned char mode, unsigned char interval, unsigned char speed);
+void PWM_Dimming(unsigned char mode, unsigned char interval, unsigned int speed);
 
 #endif
-

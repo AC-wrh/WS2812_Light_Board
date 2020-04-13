@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>Target 1</TargetName>
+      <TargetName>WS2812_Light_Board</TargetName>
       <ToolsetNumber>0x0</ToolsetNumber>
       <ToolsetName>MCS-51</ToolsetName>
       <TargetOption>
@@ -167,7 +167,7 @@
             <DriverSelection>-1</DriverSelection>
           </Flash1>
           <Flash2></Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
         </Utilities>
         <Target51>
@@ -298,7 +298,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>..\Module\Inc;..\System\Inc</IncludePath>
             </VariousControls>
           </C51>
           <Ax51>
@@ -348,7 +348,29 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>Source Group 1</GroupName>
+          <GroupName>System</GroupName>
+          <Files>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\Src\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\Src\main.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Module</GroupName>
+          <Files>
+            <File>
+              <FileName>ws2812.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Module\Src\ws2812.c</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>
