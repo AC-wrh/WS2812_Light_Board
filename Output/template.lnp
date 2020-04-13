@@ -1,5 +1,0 @@
-"..\Output\timer.obj",
-"..\Output\main.obj",
-"..\Output\ws2812.obj" 
-TO "..\Output\template" 
-PRINT(".\template.m51") RAMSIZE(256) 

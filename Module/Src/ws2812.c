@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:33
- * @LastEditTime: 2020-04-13 15:56:02
+ * @LastEditTime: 2020-04-13 16:08:30
  */
 #include "core.h"
 
@@ -15,7 +15,13 @@ unsigned char ws_data_buf_g[WS2812_QUANTITY];
 unsigned char ws_data_buf_b[WS2812_QUANTITY];
 unsigned char ws_rgb_data[3]; // 0 - r, 1 - g, 2 - b
 
-void dev_ws_send_bit1() //H=0.7us.L=0.6us  数据1的表示   芯片STC15F104W  @ 12MHZ
+/**
+ * @name: dev_ws_send_bit1(void)
+ * @Description: 
+ * @param {type} 
+ * @return: 
+ */
+void dev_ws_send_bit1(void) //H=0.7us.L=0.6us  数据1的表示   芯片STC15F104W  @ 12MHZ
 {                       //1US= 4个 _nop_();  进程序要用掉2个_nop_(); 出程序用掉2个_nop_();
     sda = 1;
     _nop_();
@@ -25,7 +31,7 @@ void dev_ws_send_bit1() //H=0.7us.L=0.6us  数据1的表示   芯片STC15F104W  
     _nop_();
 }
 
-void dev_ws_send_bit0() //H=0.35us.L=0.8us  ==数据0的表示
+void dev_ws_send_bit0(void) //H=0.35us.L=0.8us  ==数据0的表示
 {
     sda = 1;
     _nop_();
