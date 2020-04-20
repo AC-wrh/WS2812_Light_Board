@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:33
- * @LastEditTime: 2020-04-13 16:08:30
+ * @LastEditTime: 2020-04-20 15:12:27
  */
 #include "core.h"
 
@@ -14,13 +14,8 @@ unsigned char ws_data_buf_r[WS2812_QUANTITY];
 unsigned char ws_data_buf_g[WS2812_QUANTITY];
 unsigned char ws_data_buf_b[WS2812_QUANTITY];
 unsigned char ws_rgb_data[3]; // 0 - r, 1 - g, 2 - b
+unsigned char mode_switch_flag = 0;
 
-/**
- * @name: dev_ws_send_bit1(void)
- * @Description: 
- * @param {type} 
- * @return: 
- */
 void dev_ws_send_bit1(void) //H=0.7us.L=0.6us  数据1的表示   芯片STC15F104W  @ 12MHZ
 {                       //1US= 4个 _nop_();  进程序要用掉2个_nop_(); 出程序用掉2个_nop_();
     sda = 1;
@@ -139,6 +134,15 @@ void color_cycle_gradient(unsigned char interval)
         if (ws_data_b == COLOR_MIN)
         {
             cycle_gradient_flag = 1;
+            mode_switch_flag++;
+            if (mode_switch_flag % SIGNLE_MODE_CYCLE == 0)
+            {
+                if (++ws_mode == 3)
+                {
+                    ws_mode = 0;
+                    mode_switch_flag = 0;
+                }
+            }
         }
         break;
 
@@ -210,15 +214,13 @@ void get_chase_data(unsigned char chase_quantity, unsigned char chase_interval) 
 
 void PWM_Dimming(unsigned char mode, unsigned char interval, unsigned int speed)
 {
-    unsigned char count;
-    // unsigned char chase_data[CHASE_QUANTITY];
-    // static unsigned char chase_count = 0;
+    unsigned char count, flash_count;
 
     timing_time = speed;
 
     switch (mode)
     {
-    case MODE_GRADIENT: //timer 25
+    case MODE_GRADIENT:
         for (count = 0; count < WS2812_QUANTITY - 1; count++)
         {
             ws_data_buf_r[count + 1] = ws_data_buf_r[count];
@@ -231,7 +233,7 @@ void PWM_Dimming(unsigned char mode, unsigned char interval, unsigned int speed)
         ws_data_buf_b[0] = ws_rgb_data[2];
         break;
 
-    case MODE_BOTH_GRADIENT: //timer 25
+    case MODE_BOTH_GRADIENT:
         for (count = 0; count < (WS2812_QUANTITY - 1) / 2; count++)
         {
             ws_data_buf_r[count + 1] = ws_data_buf_r[count];
@@ -265,9 +267,37 @@ void PWM_Dimming(unsigned char mode, unsigned char interval, unsigned int speed)
 
         break;
 
+    case MODE_WHITE_FLASHING:
+        for (flash_count = 0; flash_count < interval; flash_count++)
+        {
+            if (flash_count % 2 == 0)
+            {
+                for (count = 0; count < WS2812_QUANTITY - 1; count++)
+                {
+                    ws_data_buf_r[count] = 0xff;
+                    ws_data_buf_g[count] = 0xff;
+                    ws_data_buf_b[count] = 0xff;
+                }
+            }
+            else
+            {
+                for (count = 0; count < WS2812_QUANTITY - 1; count++)
+                {
+                    ws_data_buf_r[count] = 0;
+                    ws_data_buf_g[count] = 0;
+                    ws_data_buf_b[count] = 0;
+                }
+            }
+            dev_ws_send_data(WS2812_QUANTITY, ws_data_buf_r, ws_data_buf_g, ws_data_buf_b);
+            dev_ws_delayms(speed);
+        }
+
+        infrared_signal = 0;
+        break;
+
     default:
         break;
     }
-
+    
     dev_ws_send_data(WS2812_QUANTITY, ws_data_buf_r, ws_data_buf_g, ws_data_buf_b);
 }

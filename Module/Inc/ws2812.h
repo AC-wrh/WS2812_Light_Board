@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:41
- * @LastEditTime: 2020-04-13 13:59:52
+ * @LastEditTime: 2020-04-20 14:59:17
  */
 #ifndef __WS2812_H__
 #define __WS2812_H__
@@ -21,6 +21,9 @@
 #define MODE_GRADIENT       0
 #define MODE_BOTH_GRADIENT  1
 #define MODE_CHASE          2
+#define MODE_WHITE_FLASHING 3
+
+#define SIGNLE_MODE_CYCLE   1
 
 #define CHASE_QUANTITY      6
 #define CHASE_INTERVAL      4

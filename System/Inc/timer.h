@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:17
- * @LastEditTime: 2020-04-13 09:36:43
+ * @LastEditTime: 2020-04-20 15:07:30
  */
 #ifndef __TIMER_H__
 #define __TIMER_H__
@@ -13,6 +13,7 @@
 #define T1MS_12T    (65536-FOSC/12/1000)    //12T模式
 
 void dev_ws_delayus(unsigned int us);
+void dev_ws_delayms(unsigned int ms);
 void timer0_init(void);
 
 extern unsigned char timer0_flag;
