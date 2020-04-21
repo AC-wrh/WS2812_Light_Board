@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:41
- * @LastEditTime: 2020-04-20 14:59:17
+ * @LastEditTime: 2020-04-21 11:46:02
  */
 #ifndef __WS2812_H__
 #define __WS2812_H__
@@ -18,10 +18,11 @@
 #define COLOR_MIN       0
 #define COLOR_MAX       255
 
-#define MODE_GRADIENT       0
-#define MODE_BOTH_GRADIENT  1
-#define MODE_CHASE          2
-#define MODE_WHITE_FLASHING 3
+#define MODE_GRADIENT               0
+#define MODE_BOTH_GRADIENT          1
+#define MODE_SYMMETRICAL_REBOUND    2
+#define MODE_CHASE                  3
+#define MODE_WHITE_FLASHING         4
 
 #define SIGNLE_MODE_CYCLE   1
 

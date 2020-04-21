@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:33
- * @LastEditTime: 2020-04-20 15:12:27
+ * @LastEditTime: 2020-04-21 13:50:58
  */
 #include "core.h"
 
@@ -214,37 +214,47 @@ void get_chase_data(unsigned char chase_quantity, unsigned char chase_interval) 
 
 void PWM_Dimming(unsigned char mode, unsigned char interval, unsigned int speed)
 {
-    unsigned char count, flash_count;
-
+    unsigned char count = 0, cycle_count = 0;
+    static unsigned char direction_change_flag = 0, direction_count = 0;
     timing_time = speed;
 
     switch (mode)
     {
     case MODE_GRADIENT:
-        for (count = 0; count < WS2812_QUANTITY - 1; count++)
+
+        for (count = WS2812_QUANTITY - 1; count > 0; count--)
         {
-            ws_data_buf_r[count + 1] = ws_data_buf_r[count];
-            ws_data_buf_g[count + 1] = ws_data_buf_g[count];
-            ws_data_buf_b[count + 1] = ws_data_buf_b[count];
+            ws_data_buf_r[count] = ws_data_buf_r[count - 1];
+            ws_data_buf_g[count] = ws_data_buf_g[count - 1];
+            ws_data_buf_b[count] = ws_data_buf_b[count - 1];
         }
+
         color_cycle_gradient(interval);
+
         ws_data_buf_r[0] = ws_rgb_data[0];
         ws_data_buf_g[0] = ws_rgb_data[1];
         ws_data_buf_b[0] = ws_rgb_data[2];
+        
         break;
 
     case MODE_BOTH_GRADIENT:
-        for (count = 0; count < (WS2812_QUANTITY - 1) / 2; count++)
+    
+        for (count = (WS2812_QUANTITY - 1) / 2; count > 0; count--)
         {
-            ws_data_buf_r[count + 1] = ws_data_buf_r[count];
-            ws_data_buf_g[count + 1] = ws_data_buf_g[count];
-            ws_data_buf_b[count + 1] = ws_data_buf_b[count];
-
-            ws_data_buf_r[23 - (count + 1)] = ws_data_buf_r[23 - count];
-            ws_data_buf_g[23 - (count + 1)] = ws_data_buf_g[23 - count];
-            ws_data_buf_b[23 - (count + 1)] = ws_data_buf_b[23 - count];
+            ws_data_buf_r[count] = ws_data_buf_r[count - 1];
+            ws_data_buf_g[count] = ws_data_buf_g[count - 1];
+            ws_data_buf_b[count] = ws_data_buf_b[count - 1];
         }
+        
+        for (count = WS2812_QUANTITY / 2; count < WS2812_QUANTITY - 1; count++)
+        {
+            ws_data_buf_r[count] = ws_data_buf_r[count + 1];
+            ws_data_buf_g[count] = ws_data_buf_g[count + 1];
+            ws_data_buf_b[count] = ws_data_buf_b[count + 1];
+        }
+
         color_cycle_gradient(interval);
+
         ws_data_buf_r[0] = ws_rgb_data[0];
         ws_data_buf_g[0] = ws_rgb_data[1];
         ws_data_buf_b[0] = ws_rgb_data[2];
@@ -252,6 +262,46 @@ void PWM_Dimming(unsigned char mode, unsigned char interval, unsigned int speed)
         ws_data_buf_r[23] = ws_rgb_data[0];
         ws_data_buf_g[23] = ws_rgb_data[1];
         ws_data_buf_b[23] = ws_rgb_data[2];
+
+        break;
+
+    case MODE_SYMMETRICAL_REBOUND:
+
+        color_cycle_gradient(interval);
+        
+        if (direction_change_flag)
+        {
+            ws_data_buf_r[direction_count] = ws_rgb_data[0];
+            ws_data_buf_g[direction_count] = ws_rgb_data[1];
+            ws_data_buf_b[direction_count] = ws_rgb_data[2];
+
+            ws_data_buf_r[23 - direction_count] = ws_rgb_data[0];
+            ws_data_buf_g[23 - direction_count] = ws_rgb_data[1];
+            ws_data_buf_b[23 - direction_count] = ws_rgb_data[2];
+
+            if (--direction_count == 0)
+            {
+                direction_change_flag = 0;
+            }
+        }
+        else
+        {
+            ws_data_buf_r[direction_count] = ws_rgb_data[0];
+            ws_data_buf_g[direction_count] = ws_rgb_data[1];
+            ws_data_buf_b[direction_count] = ws_rgb_data[2];
+
+            ws_data_buf_r[23 - direction_count] = ws_rgb_data[0];
+            ws_data_buf_g[23 - direction_count] = ws_rgb_data[1];
+            ws_data_buf_b[23 - direction_count] = ws_rgb_data[2];
+
+            if (++direction_count == 11)
+            {
+                direction_change_flag = 1;
+            }
+        }
+        
+        
+
         break;
 
     case MODE_CHASE:
@@ -268,9 +318,9 @@ void PWM_Dimming(unsigned char mode, unsigned char interval, unsigned int speed)
         break;
 
     case MODE_WHITE_FLASHING:
-        for (flash_count = 0; flash_count < interval; flash_count++)
+        for (cycle_count = 0; cycle_count < interval; cycle_count++)
         {
-            if (flash_count % 2 == 0)
+            if (cycle_count % 2 == 0)
             {
                 for (count = 0; count < WS2812_QUANTITY - 1; count++)
                 {
