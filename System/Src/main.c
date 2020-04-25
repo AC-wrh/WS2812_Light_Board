@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:40:39
- * @LastEditTime: 2020-04-24 17:19:59
+ * @LastEditTime: 2020-04-25 17:31:14
  */
 #include "core.h"
 
@@ -30,7 +30,7 @@ int main(void)
         else if (timer0_flag == 1)
         {
             TR0 = 0;
-            PWM_Dimming(ws_mode, COLOR_CHANGE_INTERVAL_VERY_BIG, 1000);
+            PWM_Dimming(MODE_CHASE, COLOR_CHANGE_INTERVAL_VERY_BIG, 2500);
             timer0_flag = 0;
             TR0 = 1;
         }

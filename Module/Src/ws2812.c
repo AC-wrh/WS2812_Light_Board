@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:33
- * @LastEditTime: 2020-04-25 17:16:31
+ * @LastEditTime: 2020-04-25 17:57:20
  */
 #include "core.h"
 
@@ -198,33 +198,34 @@ void ws_color_gradient_cycle_table(unsigned char interval)
 void reindex_array(unsigned char mode, unsigned char *arr, unsigned char len, unsigned char num)
 {
     unsigned char idata *arr_buf;
+    // unsigned char arr_buf;
     unsigned char count;
 
     switch (mode)
     {
-        // case 0: //Rotate left
-        //     while (num--)
-        //     {
-        //         arr_buf = arr[0];
-        //         for (count = 0; count < len - 1; count++)
-        //         {
-        //             arr[count] = arr[count + 1];
-        //         }
-        //         arr[count] = arr_buf;
-        //     }
-        //     break;
+    // case 0: //Rotate left
+    //     while (num--)
+    //     {
+    //         arr_buf = arr[0];
+    //         for (count = 0; count < len - 1; count++)
+    //         {
+    //             arr[count] = arr[count + 1];
+    //         }
+    //         arr[count] = arr_buf;
+    //     }
+    //     break;
 
-        // case 1: //Rotate Right
-        //     while (num--)
-        //     {
-        //         arr_buf = arr[len - 1];
-        //         for (count = len - 1; count > 0; count--)
-        //         {
-        //             arr[count] = arr[count - 1];
-        //         }
-        //         arr[0] = arr_buf;
-        //     }
-        //     break;
+    // case 1: //Rotate Right
+    //     while (num--)
+    //     {
+    //         arr_buf = arr[len - 1];
+    //         for (count = len - 1; count > 0; count--)
+    //         {
+    //             arr[count] = arr[count - 1];
+    //         }
+    //         arr[0] = arr_buf;
+    //     }
+    //     break;
 
     case 0: //Rotate left
 
@@ -257,11 +258,10 @@ void reindex_array(unsigned char mode, unsigned char *arr, unsigned char len, un
             arr[count] = arr[count - num];
         }
 
-        for (; count < len; count--)
+        while (num--)
         {
-            arr[count] = *(--arr_buf);
+            arr[count--] = *(--arr_buf);
         }
-        arr[0] = arr_buf;
 
         break;
 
