@@ -3,12 +3,18 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-20 10:54:58
- * @LastEditTime: 2020-04-20 15:02:12
+ * @LastEditTime: 2020-04-24 17:29:17
  */
 #include "core.h"
 
-unsigned char infrared_signal = 0;
+bit infrared_signal_flag = 0;
 
+/**
+ * @brief: 外部中断1初始化
+ * @note: none
+ * @param void
+ * @retval: none
+ */
 void exint1_init(void)
 {
     INT1 = 1;
@@ -17,7 +23,13 @@ void exint1_init(void)
     EA = 1;
 }
 
+/**
+ * @brief: 外部中断1中断函数
+ * @note: none
+ * @param void
+ * @retval: none
+ */
 void exint1_IRQ_handle(void) interrupt 2 //INT1中断入口
 {
-    infrared_signal = 1;
+    infrared_signal_flag = 1;
 }

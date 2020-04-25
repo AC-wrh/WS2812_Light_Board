@@ -3,13 +3,19 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:40:46
- * @LastEditTime: 2020-04-20 15:11:25
+ * @LastEditTime: 2020-04-24 17:26:59
  */
 #include "core.h"
 
-unsigned char timer0_flag = 0;
+bit timer0_flag = 0;
 unsigned int timer0_count = 0, timing_time = 100;
 
+/**
+ * @brief: 用于ws2812的延时（微秒级）
+ * @note: none
+ * @param us
+ * @retval: none
+ */
 void dev_ws_delayus(unsigned int us)
 {
     unsigned int timer_count;
@@ -20,6 +26,12 @@ void dev_ws_delayus(unsigned int us)
     }
 }
 
+/**
+ * @brief: 用于ws2812的延时（毫秒级）
+ * @note: none
+ * @param ms
+ * @retval: none
+ */
 void dev_ws_delayms(unsigned int ms)
 {
     unsigned int x, y;
@@ -27,7 +39,13 @@ void dev_ws_delayms(unsigned int ms)
         for (y = 920; y > 0; y--);
 }
 
-void timer0_init(void) //中断初始化
+/**
+ * @brief: 定时器0初始化
+ * @note: none
+ * @param void
+ * @retval: none
+ */
+void timer0_init(void)
 {
     AUXR |= 0x80;       //定时器0为1T模式
     // AUXR &= 0x7f;       //定时器0为12T模式
@@ -39,12 +57,18 @@ void timer0_init(void) //中断初始化
     EA = 1;             //开启中断
 }
 
+/**
+ * @brief: 定时器0中断函数
+ * @note: none
+ * @param void
+ * @retval: none
+ */
 void timer0_IRQ_handle(void) interrupt 1 using 1
 {
     TF0 = 0;
     timer0_count++;
 
-    if (timer0_count % timing_time == 0)    //改变该值可以调节变化速度
+    if (timer0_count % timing_time == 0)    //改变timing_time可以调节变化速度
     {
         timer0_flag = 1;
     }

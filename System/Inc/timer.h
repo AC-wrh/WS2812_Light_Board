@@ -3,7 +3,7 @@
  * @version: 
  * @Author: Adol
  * @Date: 2020-04-11 16:41:17
- * @LastEditTime: 2020-04-20 15:07:30
+ * @LastEditTime: 2020-04-24 17:21:18
  */
 #ifndef __TIMER_H__
 #define __TIMER_H__
@@ -16,7 +16,7 @@ void dev_ws_delayus(unsigned int us);
 void dev_ws_delayms(unsigned int ms);
 void timer0_init(void);
 
-extern unsigned char timer0_flag;
+extern bit timer0_flag;
 extern unsigned int timing_time;
 
 #endif
